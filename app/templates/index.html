@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home</title>
-</head>
-<body>
-    <h1>Welcome to Flask</h1>
-    <a href="{{ url_for('main.user_profile', user_id=1) }}">User Profile</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Index{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Hello, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
+</div>
+{% endblock %}
