@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
-from app.models import User
-from app.forms import LoginForm, RegistrationForm
-from flask_login import login_user, logout_user, login_required
+from app.models import User, BaseballCard
+from app.forms import LoginForm, RegistrationForm, AddCardForm
+from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 
 
@@ -17,6 +17,21 @@ def home():
 def user_profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('profile.html', user=user)
+
+
+@main_routes.route('/add-card', methods=['GET', 'POST'])
+@login_required
+def add_card():
+    form = AddCardForm()
+    if form.validate_on_submit():
+        card = BaseballCard(name=form.name.data, position=form.position.data, team=form.team.data,
+                            year=form.year.data, user_id=current_user.id)
+        if form.picture.data:
+            card.picture = form.picture.data.read()
+        db.session.add(card)
+        db.session.commit()
+        return redirect(url_for('main.add_card'))
+    return render_template('add-card.html', form=form)
 
 
 auth_routes = Blueprint('auth', __name__)
@@ -55,3 +70,4 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('main.home'))
+

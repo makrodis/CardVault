@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
+from flask_wtf.file import FileAllowed
+from wtforms import StringField, SubmitField, PasswordField, FileField
 from wtforms.validators import DataRequired, Regexp, EqualTo
 
 
@@ -16,4 +17,13 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[
         DataRequired(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+
+class AddCardForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    position = StringField('Position', validators=[DataRequired()])
+    team = StringField('Team', validators=[DataRequired()])
+    year = StringField('Year', validators=[DataRequired()])
+    picture = FileField('Image (png, jpeg, pdf, or jpg)', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'pdf'])])
     submit = SubmitField('Submit')
