@@ -4,7 +4,8 @@ from app.forms import LoginForm, RegistrationForm, AddCardForm
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 import io
-
+import os
+import magic
 
 main_routes = Blueprint('main', __name__)
 
@@ -24,11 +25,19 @@ def image():
     if not card or not card.picture:
         flash('Cards not found.')
         return render_template('index.html')
+
+    mime = magic.Magic(mime=True)
+    mime_type = mime.from_buffer(card.picture)
     return send_file(
-        io.BytesIO(card.picture), 
-        mimetype='image/png',
+        io.BytesIO(card.picture),
+        mimetype=mime_type,
         as_attachment=False,
     )
+    # return send_file(
+    #     io.BytesIO(card.picture),
+    #     mimetype='image/png',
+    #     as_attachment=False,
+    # )
 
 @main_routes.route('/collections')
 @login_required
@@ -57,6 +66,9 @@ def add_card():
                             year=form.year.data, user_id=current_user.id)
         if form.picture.data:
             card.picture = form.picture.data.read()
+        else:
+            default_image_path = os.path.join(os.path.dirname(__file__), 'static', 'default.png')
+            card.picture = open(default_image_path, 'rb').read()
         db.session.add(card)
         db.session.commit()
         return redirect(url_for('main.add_card'))

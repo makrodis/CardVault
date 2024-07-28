@@ -21,9 +21,9 @@ class RegistrationForm(FlaskForm):
 
 
 class AddCardForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired()])
-    position = StringField('Position', validators=[DataRequired()])
-    team = StringField('Team', validators=[DataRequired()])
-    year = StringField('Year', validators=[DataRequired()])
+    name = StringField('Name*', validators=[DataRequired()])
+    position = StringField('Position*', validators=[DataRequired()])
+    team = StringField('Team*', validators=[DataRequired()])
+    year = StringField('Year*', validators=[DataRequired()])
     picture = FileField('Image (png, jpeg, pdf, or jpg)', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'pdf'])])
     submit = SubmitField('Submit')
