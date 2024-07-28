@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, send_file, request
 from app.models import User, BaseballCard
 from app.forms import LoginForm, RegistrationForm, AddCardForm
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
+import io
 
 
 main_routes = Blueprint('main', __name__)
@@ -13,9 +14,37 @@ def home():
     return render_template('index.html')
 
 
+@main_routes.route('/image')
+def image():
+    card_id = request.args.get('card_id')
+    if not card_id:
+        flash('Card id not given.')
+        return render_template('index.html')
+    card = db.session.query(BaseballCard).get(card_id)
+    if not card or not card.picture:
+        flash('Cards not found.')
+        return render_template('index.html')
+    return send_file(
+        io.BytesIO(card.picture), 
+        mimetype='image/png',
+        as_attachment=False,
+    )
+
+@main_routes.route('/collections')
+@login_required
+def collections():
+    return render_template('collections.html', users=User.query.all())
+
+@main_routes.route('/user', defaults={'user_id': None})
 @main_routes.route('/user/<int:user_id>')
+@login_required
 def user_profile(user_id):
-    user = User.query.get_or_404(user_id)
+    if user_id is None:
+        user_id = current_user.id
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        flash('User not found.')
+        return render_template('index.html')
     return render_template('profile.html', user=user)
 
 
