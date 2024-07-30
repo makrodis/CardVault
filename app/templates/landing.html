@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardVault</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CardVault</div>
+            <ul>
+                <li><a href="{{ url_for('main.collections') }}">View Collections</a></li>
+                <li><a href="{{ url_for('auth.register') }}">Sign up</a></li>
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <h1>CardVault</h1>
+            <p>CardVault lets you keep track and put on display your favorite baseball cards! </p>
+            <a href="{{ url_for('auth.register') }}" class="cta-button">Get Started</a>
+        </section>
+
+        <section id="features">
+            <h2>Key Features</h2>
+            <div class="feature-container">
+                <div class="feature">
+                    <img src="placeholder1.jpg" alt="Feature 1" class="feature-image">
+                    <h3>Feature 1</h3>
+                    <p>Description of feature 1.</p>
+                </div>
+                <div class="feature">
+                    <img src="placeholder2.jpg" alt="Feature 2" class="feature-image">
+                    <h3>Feature 2</h3>
+                    <p>Description of feature 2.</p>
+                </div>
+                <div class="feature">
+                    <img src="placeholder3.jpg" alt="Feature 3" class="feature-image">
+                    <h3>Feature 3</h3>
+                    <p>Description of feature 3.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about">
+            <h2>About Us</h2>
+            <p>Information about your company or app goes here.</p>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form>
+                <input type="text" placeholder="Name" required>
+                <input type="email" placeholder="Email" required>
+                <textarea placeholder="Message" required></textarea>
+                <button type="submit">Send</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p> 2024 CardVault. All rights reserved.</p>
+    </footer>
+</body>
+</html>

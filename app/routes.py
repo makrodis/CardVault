@@ -12,7 +12,7 @@ main_routes = Blueprint('main', __name__)
 
 @main_routes.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('landing.html')
 
 
 @main_routes.route('/image')
@@ -40,9 +40,15 @@ def image():
     # )
 
 @main_routes.route('/collections')
-@login_required
 def collections():
     return render_template('collections.html', users=User.query.all())
+
+
+@main_routes.route('/card/<int:card_id>')
+@login_required
+def view_card(card_id):
+    card = BaseballCard.query.filter_by(id=card_id).first()
+    return render_template('view-card.html', card=card)
 
 @main_routes.route('/user', defaults={'user_id': None})
 @main_routes.route('/user/<int:user_id>')
@@ -80,6 +86,8 @@ auth_routes = Blueprint('auth', __name__)
 
 @auth_routes.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        flash('You are already logged in.')
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()

@@ -6,21 +6,18 @@
 <div class="page-header">
     <h1><a>{{ user.username }}</a>'s Cards</h1>
     <ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
-        {% for card in user.cards[:6] %}
+        {% for card in user.cards %}
             <li style="margin-right: 10px; margin-bottom: 10px;">
                 <h2>{{ card.name }}</h2>
                 <div>
-                    <img src="{{ url_for('main.image', card_id=card.id) }}" alt="{{ card.name }}" style="width: 200px; height: auto;"> 
+                    <a href="{{ url_for('main.view_card', card_id=card.id) }}">
+                    <img src="{{ url_for('main.image', card_id=card.id) }}" alt="{{ card.name }}" style="width: 200px; height: auto;"></a>
                 </div>
             </li>
         {% endfor %}
     </ul>
-    {% if user.cards|length > 6 %}
-        <div>
-            <a>See all cards</a>
-        </div>
-    {% endif %}
 </div>
 {% endblock %}
+
 
 
