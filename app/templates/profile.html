@@ -1,12 +1,16 @@
 {% extends "base.html" %}
-
+{% import "bootstrap/wtf.html" as wtf %}
 {% block title %}Collection{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1><a>{{ user.username }}</a>'s Cards</h1>
+    
+    <div class="col-md-4">
+        <h1>{{ user.username }}'s Cards</h1>
+        {{ wtf.quick_form(form) }}
+    </div>
     <ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
-        {% for card in user.cards %}
+        {% for card in cards %}
             <li style="margin-right: 10px; margin-bottom: 10px;">
                 <h2>{{ card.name }}</h2>
                 <div>
@@ -16,6 +20,9 @@
             </li>
         {% endfor %}
     </ul>
+
+        
+
 </div>
 {% endblock %}
 

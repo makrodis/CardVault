@@ -7,7 +7,7 @@
     <h1>Card Collections</h1>
     {% for user in users %}
         <div class="user-section" style="margin-bottom: 20px;">
-            <h2><a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}</a>'s Cards</h2>
+            <h2><a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}'s</a> Cards</h2>
             <ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
                 {% for card in user.cards[:6] %}
                     <li style="margin-right: 10px; margin-bottom: 10px;">
@@ -19,7 +19,7 @@
                     </li>
                 {% endfor %}
             </ul>
-            {% if user.cards|length > 6 %}
+            {% if user.cards.count() > 6 %}
                 <div>
                     <a href="{{ url_for('main.user_profile', user_id=user.id) }}">See all cards</a>
                 </div>

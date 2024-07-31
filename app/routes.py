@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, send_file, request
 from app.models import User, BaseballCard
-from app.forms import LoginForm, RegistrationForm, AddCardForm
+from app.forms import LoginForm, RegistrationForm, AddCardForm, SortCardsForm
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
+from sqlalchemy import func
 import io
 import os
 import magic
@@ -50,17 +51,21 @@ def view_card(card_id):
     card = BaseballCard.query.filter_by(id=card_id).first()
     return render_template('view-card.html', card=card)
 
-@main_routes.route('/user', defaults={'user_id': None})
-@main_routes.route('/user/<int:user_id>')
+@main_routes.route('/user', defaults={'user_id': None}, methods=['GET', 'POST'])
+@main_routes.route('/user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def user_profile(user_id):
+    form = SortCardsForm()
     if user_id is None:
         user_id = current_user.id
     user = User.query.filter_by(id=user_id).first()
+    cards = user.cards
     if user is None:
         flash('User not found.')
         return render_template('index.html')
-    return render_template('profile.html', user=user)
+    if form.validate_on_submit():
+        cards = user.cards.order_by(func.lower(getattr(BaseballCard, form.sort_by.data))).all()
+    return render_template('profile.html', user=user, cards=cards, form=form)
 
 
 @main_routes.route('/add-card', methods=['GET', 'POST'])
