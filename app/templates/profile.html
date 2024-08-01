@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "macros.html" as macros %}
 {% block title %}Collection{% endblock %}
 
 {% block page_content %}
@@ -20,6 +21,11 @@
             </li>
         {% endfor %}
     </ul>
+    {% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.user_profile', sort) }}
+</div>
+{% endif %}
 
         
 

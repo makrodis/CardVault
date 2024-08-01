@@ -42,7 +42,11 @@ def image():
 
 @main_routes.route('/collections')
 def collections():
-    return render_template('collections.html', users=User.query.all())
+    page = request.args.get('page', 1, type=int)
+    pagination = User.query.order_by(User.username.asc()).paginate(
+        page=page, per_page=5, error_out=False)
+    users = pagination.items
+    return render_template('collections.html', users=users, pagination=pagination)
 
 
 @main_routes.route('/card/<int:card_id>')
@@ -59,13 +63,18 @@ def user_profile(user_id):
     if user_id is None:
         user_id = current_user.id
     user = User.query.filter_by(id=user_id).first()
-    cards = user.cards
     if user is None:
         flash('User not found.')
         return render_template('index.html')
     if form.validate_on_submit():
-        cards = user.cards.order_by(func.lower(getattr(BaseballCard, form.sort_by.data))).all()
-    return render_template('profile.html', user=user, cards=cards, form=form)
+        sort_by = form.sort_by.data
+        return redirect(url_for('main.user_profile', user_id=user_id, sort=sort_by))
+    sort_by = request.args.get('sort', 'name', type=str)
+    page = request.args.get('page', 1, type=int)
+    pagination = user.cards.order_by(func.lower(getattr(BaseballCard, sort_by))).paginate(
+        page=page, per_page=5, error_out=False)
+    cards = pagination.items
+    return render_template('profile.html', user=user, cards=cards, form=form, pagination=pagination, sort=sort_by)
 
 
 @main_routes.route('/add-card', methods=['GET', 'POST'])
@@ -98,7 +107,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user is not None and user.check_password(form.password.data):
             login_user(user)
-            return redirect(url_for('main.home'))
+            return redirect(url_for('main.user_profile', user_id=user.id))
         flash('Invalid email or password.')
     return render_template('login.html', form=form)
 

@@ -1,13 +1,18 @@
 {% extends "base.html" %}
-
+{% import "macros.html" as macros %}
 {% block title %}User Collections{% endblock %}
+
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Card Collections</h1>
+    <h1>User Card Collections</h1>
     {% for user in users %}
         <div class="user-section" style="margin-bottom: 20px;">
-            <h2><a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}'s</a> Cards</h2>
+            <h2>
+                <span class="heading-container">
+                    <a href="{{ url_for('main.user_profile', user_id=user.id) }}">{{ user.username }}</a> has {{ user.cards.count() }} cards, including:
+                </span>
+            </h2>
             <ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
                 {% for card in user.cards[:6] %}
                     <li style="margin-right: 10px; margin-bottom: 10px;">
@@ -19,12 +24,12 @@
                     </li>
                 {% endfor %}
             </ul>
-            {% if user.cards.count() > 6 %}
-                <div>
-                    <a href="{{ url_for('main.user_profile', user_id=user.id) }}">See all cards</a>
-                </div>
-            {% endif %}
         </div>
     {% endfor %}
+    {% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.collections') }}
+</div>
+{% endif %}
 </div>
 {% endblock %}
