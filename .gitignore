@@ -6,3 +6,5 @@ __pycache__/
 *.sqlite
 
 .DS_Store
+
+tmp/

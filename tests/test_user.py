@@ -15,13 +15,13 @@ class UserModelTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_password(self):
+    def test_password_setting(self):
         u = User()
         u.create_password('heptane')
         self.assertTrue(u.check_password('heptane'))
         self.assertFalse(u.check_password('heptane2'))
 
-    def test_password2(self):
+    def test_password_hashing(self):
         u = User()
         u.create_password('heptane')
         self.assertNotEqual(u.password, 'heptane')
