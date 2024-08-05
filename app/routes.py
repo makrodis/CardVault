@@ -4,9 +4,12 @@ from app.forms import LoginForm, RegistrationForm, AddCardForm, SortCardsForm
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from sqlalchemy import func
+from PIL import Image
 import io
 import os
 import magic
+import pillow_heif
+import fitz
 
 main_routes = Blueprint('main', __name__)
 
@@ -29,24 +32,55 @@ def image():
 
     mime = magic.Magic(mime=True)
     mime_type = mime.from_buffer(card.picture)
+
+    img_io = io.BytesIO(card.picture)
+
+    if mime_type == 'application/pdf':
+        pdf_document = fitz.open(stream=img_io, filetype="pdf")
+        first_page = pdf_document.load_page(0)  # Load the first page
+        pix = first_page.get_pixmap()
+        img_data = pix.tobytes("png")
+        img = Image.open(io.BytesIO(img_data))
+    elif mime_type == 'image/heic':
+        heif_file = pillow_heif.read_heif(img_io)
+        img = Image.frombytes(
+            heif_file.mode, 
+            heif_file.size, 
+            heif_file.data,
+            "raw",
+            heif_file.mode,
+            heif_file.stride,
+        )
+    else:
+        img = Image.open(img_io)
+
+
+    output_io = io.BytesIO()
+    img.save(output_io, 'JPEG')
+    output_io.seek(0)
+    
     return send_file(
-        io.BytesIO(card.picture),
-        mimetype=mime_type,
+        output_io,
+        mimetype='image/jpeg',
         as_attachment=False,
     )
+
+    # mime = magic.Magic(mime=True)
+    # mime_type = mime.from_buffer(card.picture)
     # return send_file(
     #     io.BytesIO(card.picture),
-    #     mimetype='image/png',
+    #     mimetype=mime_type,
     #     as_attachment=False,
     # )
-
+     
 @main_routes.route('/collections')
 def collections():
     page = request.args.get('page', 1, type=int)
     pagination = User.query.order_by(User.username.asc()).paginate(
         page=page, per_page=5, error_out=False)
     users = pagination.items
-    return render_template('collections.html', users=users, pagination=pagination)
+    count = User.query.count()
+    return render_template('collections.html', users=users, pagination=pagination, count=count)
 
 
 @main_routes.route('/card/<int:card_id>')
